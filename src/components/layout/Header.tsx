@@ -46,7 +46,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   };
 
   return (
-    <header className="fixed left-64 right-0 top-0 z-30 h-16 bg-bg-base/80 backdrop-blur-lg border-b border-border-subtle flex items-center px-6 lg:pl-0">
+    <header className="fixed left-0 right-0 top-0 z-30 h-16 bg-bg-base/80 backdrop-blur-lg border-b border-border-subtle flex items-center px-6 lg:pl-64">
       <Button
         variant="ghost"
         size="sm"

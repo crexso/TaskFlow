@@ -51,7 +51,7 @@ export function Tasks() {
   };
 
   return (
-    <div className="pt-16 pl-64 p-6 space-y-6">
+    <div className="pt-16 lg:pl-64 p-6 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Задачи</h1>

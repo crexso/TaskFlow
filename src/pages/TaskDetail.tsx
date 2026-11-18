@@ -41,7 +41,7 @@ export function TaskDetail() {
   };
 
   return (
-    <div className="pt-16 pl-64 p-6 max-w-3xl">
+    <div className="pt-16 lg:pl-64 p-6 max-w-3xl">
       <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mb-4 gap-2">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         Назад

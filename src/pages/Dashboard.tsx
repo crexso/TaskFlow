@@ -34,7 +34,7 @@ export function Dashboard() {
   };
 
   return (
-    <div className="pt-16 pl-64 p-6 space-y-6">
+    <div className="pt-16 lg:pl-64 p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Дашборд</h1>

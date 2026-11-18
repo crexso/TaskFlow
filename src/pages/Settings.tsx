@@ -9,6 +9,29 @@ import { Modal } from '@components/ui/Modal';
 import { Checkbox } from '@components/ui/Checkbox';
 import type { Task } from '@type/task';
 
+// Validation function for imported tasks (exported for testing)
+export const validateTask = (task: unknown): task is Task => {
+  if (!task || typeof task !== 'object') return false;
+  const t = task as Record<string, unknown>;
+
+  const validStatus = ['todo', 'in-progress', 'review', 'done'];
+  const validPriority = ['low', 'medium', 'high'];
+  const validCategory = ['work', 'study', 'personal', 'other'];
+
+  return (
+    typeof t.id === 'string' &&
+    typeof t.title === 'string' && t.title.length > 0 && t.title.length <= 100 &&
+    typeof t.description === 'string' && t.description.length <= 1000 &&
+    validStatus.includes(t.status as string) &&
+    validPriority.includes(t.priority as string) &&
+    validCategory.includes(t.category as string) &&
+    (t.deadline === null || (typeof t.deadline === 'string' && !isNaN(Date.parse(t.deadline)))) &&
+    typeof t.createdAt === 'string' && !isNaN(Date.parse(t.createdAt)) &&
+    typeof t.updatedAt === 'string' && !isNaN(Date.parse(t.updatedAt)) &&
+    (t.completedAt === null || (typeof t.completedAt === 'string' && !isNaN(Date.parse(t.completedAt))))
+  );
+};
+
 // Lazy initializers to avoid setState in useEffect
 const getInitialTheme = (): 'dark' | 'light' | 'system' => {
   if (typeof window !== 'undefined') {
@@ -147,29 +170,6 @@ export function Settings() {
     URL.revokeObjectURL(url);
   };
 
-  // Validation function for imported tasks
-  const validateTask = (task: unknown): task is Task => {
-    if (!task || typeof task !== 'object') return false;
-    const t = task as Record<string, unknown>;
-
-    const validStatus = ['todo', 'in-progress', 'review', 'done'];
-    const validPriority = ['low', 'medium', 'high'];
-    const validCategory = ['work', 'study', 'personal', 'other'];
-
-    return (
-      typeof t.id === 'string' &&
-      typeof t.title === 'string' && t.title.length > 0 && t.title.length <= 100 &&
-      typeof t.description === 'string' && t.description.length <= 1000 &&
-      validStatus.includes(t.status as string) &&
-      validPriority.includes(t.priority as string) &&
-      validCategory.includes(t.category as string) &&
-      (t.deadline === null || (typeof t.deadline === 'string' && !isNaN(Date.parse(t.deadline)))) &&
-      typeof t.createdAt === 'string' && !isNaN(Date.parse(t.createdAt)) &&
-      typeof t.updatedAt === 'string' && !isNaN(Date.parse(t.updatedAt)) &&
-      (t.completedAt === null || (typeof t.completedAt === 'string' && !isNaN(Date.parse(t.completedAt))))
-    );
-  };
-
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -212,7 +212,7 @@ export function Settings() {
   };
 
   return (
-    <div className="pt-16 pl-64 p-6 max-w-4xl space-y-6">
+    <div className="pt-16 lg:pl-64 p-6 max-w-4xl space-y-6">
       <div>
         <h1 className="text-2xl font-semibold text-text-primary tracking-tight">{t('settings.title')}</h1>
         <p className="mt-1 text-text-secondary">{t('settings.subtitle')}</p>

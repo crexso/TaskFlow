@@ -42,7 +42,7 @@ export function Categories() {
   };
 
   return (
-    <div className="pt-16 pl-64 p-6 space-y-6 max-w-4xl">
+    <div className="pt-16 lg:pl-64 p-6 space-y-6 max-w-4xl">
       <div>
         <h1 className="text-2xl font-semibold text-text-primary tracking-tight">Категории</h1>
         <p className="mt-1 text-text-secondary">Управление категориями задач</p>

@@ -1,7 +1,32 @@
 import { useReducer, useEffect, type ReactNode } from 'react';
 import { TaskContext, STORAGE_KEY, generateId, initialState, taskReducer } from './TaskContext.types';
 import type { TaskContextValue } from './TaskContext.types';
-import { getStatusLabel, getPriorityLabel, getCategoryLabel } from '@lib/utils';
+import { translations } from '@lib/translations';
+
+const LANGUAGE_STORAGE_KEY = 'taskflow_language';
+
+function getCurrentLanguage(): 'ru' | 'en' {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    if (saved === 'ru' || saved === 'en') return saved;
+  }
+  return 'ru';
+}
+
+function getStatusLabelTranslated(status: string, lang: 'ru' | 'en'): string {
+  const key = `status.${status}` as keyof typeof translations.ru;
+  return translations[lang][key] || status;
+}
+
+function getPriorityLabelTranslated(priority: string, lang: 'ru' | 'en'): string {
+  const key = `priority.${priority}` as keyof typeof translations.ru;
+  return translations[lang][key] || priority;
+}
+
+function getCategoryLabelTranslated(category: string, lang: 'ru' | 'en'): string {
+  const key = `category.${category}` as keyof typeof translations.ru;
+  return translations[lang][key] || category;
+}
 
 export function TaskProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(taskReducer, initialState);
@@ -54,10 +79,11 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     if (state.filters.category !== 'all' && task.category !== state.filters.category) return false;
     if (state.filters.priority !== 'all' && task.priority !== state.filters.priority) return false;
     if (state.filters.search) {
+      const lang = getCurrentLanguage();
       const search = state.filters.search.toLowerCase();
-      const statusLabel = getStatusLabel(task.status).toLowerCase();
-      const priorityLabel = getPriorityLabel(task.priority).toLowerCase();
-      const categoryLabel = getCategoryLabel(task.category).toLowerCase();
+      const statusLabel = getStatusLabelTranslated(task.status, lang).toLowerCase();
+      const priorityLabel = getPriorityLabelTranslated(task.priority, lang).toLowerCase();
+      const categoryLabel = getCategoryLabelTranslated(task.category, lang).toLowerCase();
       if (
         !task.title.toLowerCase().includes(search) &&
         !task.description.toLowerCase().includes(search) &&

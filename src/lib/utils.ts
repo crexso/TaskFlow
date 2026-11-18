@@ -60,7 +60,18 @@ export function getRelativeTime(dateString: string): string {
 
 export function isOverdue(dateString: string | null): boolean {
   if (!dateString) return false;
-  return isPast(parseISO(dateString));
+  try {
+    const tz = getTimezone();
+    // Deadline is stored as YYYY-MM-DD (date only), representing end of that day in user's timezone
+    const deadlineDate = parseISO(dateString + 'T23:59:59');
+    const zonedDeadline = toZonedTime(deadlineDate, tz);
+    const now = new Date();
+    // Compare timestamps directly in the user's timezone
+    return zonedDeadline.getTime() < now.getTime();
+  } catch {
+    // Fallback to simple comparison
+    return isPast(parseISO(dateString));
+  }
 }
 
 export function getStatusLabel(status: string): string {
