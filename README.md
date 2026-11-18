@@ -1,32 +1,92 @@
-# React + TypeScript + Vite
+# TaskFlow
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Современное SPA-приложение для управления задачами на React 19 + TypeScript + Vite.
 
-Currently, two official plugins are available:
+## Возможности
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Полный CRUD задач**: создание, чтение, редактирование, удаление
+- **Статусы задач**: «К выполнению», «В процессе», «На проверке», «Готово»
+- **Приоритеты**: низкий, средний, высокий
+- **Категории**: работа, учёба, личное, другое
+- **Дедлайны** с индикатором просрочки
+- **Дашборд с аналитикой**: метрики, графики активности за неделю, распределение по статусам
+- **Поиск и фильтрация** по названию, описанию, статусу, категории, приоритету
+- **Мультиязычность**: русский / английский (i18n)
+- **Темы**: тёмная, светлая, системная
+- **Настройки**: часовой пояс (авто/UTC/Москва/Киев), анимации, уведомления (демо), профиль (демо)
+- **Импорт/экспорт** данных в JSON с валидацией структуры
+- **Адаптивный интерфейс**: мобильная навигация (гамбургер-меню), desktop sidebar
+- **Доступность**: ARIA-атрибуты, фокус-стили, семантическая разметка
 
-## React Compiler
+## Технологический стек
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React 19** + **TypeScript** + **Vite 6**
+- **React Router 7** (SPA-навигация)
+- **Recharts** (графики)
+- **Lucide React** (иконки)
+- **date-fns** + **date-fns-tz** (работа с датами и часовыми поясами)
+- **Tailwind CSS 4** (стилизация)
+- **Oxlint** (линтинг), **Rolldown** (бандлер)
+- Path aliases: `@/`, `@components/`, `@hooks/`, `@lib/`, `@type/`
 
-## Expanding the Oxlint configuration
+## Установка и запуск
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+```bash
+# Установка зависимостей
+npm install
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+# Запуск в режиме разработки
+npm run dev
+
+# Сборка для продакшена
+npm run build
+
+# Предпросмотр продакшн-сборки
+npm run preview
+
+# Линтинг
+npm run lint
+
+# Тестирование (базовые проверки)
+npm run test
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Структура проекта
+
+```
+src/
+├── components/
+│   ├── layout/       # Sidebar, Header
+│   ├── tasks/        # TaskCard, TaskForm
+│   └── ui/           # Button, Input, Textarea, Select, Checkbox, Modal
+├── context/
+│   ├── TaskContext.tsx        # Состояние задач (useReducer + localStorage)
+│   └── TranslationContext.tsx # i18n
+├── hooks/
+│   ├── useTasks.ts      # Хук для работы с задачами
+│   └── useTranslation.ts # Хук для переводов
+├── pages/
+│   ├── Dashboard.tsx    # Дашборд с аналитикой
+│   ├── Tasks.tsx        # Список задач с фильтрами
+│   ├── NewTask.tsx      # Создание задачи
+│   ├── TaskDetail.tsx   # Детали задачи
+│   ├── Categories.tsx   # Статистика по категориям
+│   └── Settings.tsx     # Настройки приложения
+├── lib/
+│   ├── utils.ts         # Утилиты (форматирование дат, cn, timezone)
+│   └── translations.ts  # Переводы (RU/EN)
+└── types/
+    └── task.ts          # TypeScript типы
+```
+
+## Ограничения (v1.1)
+
+- **Данные хранятся в localStorage** — привязка к конкретному браузеру/устройству. Нет синхронизации между устройствами и полноценного аккаунта.
+- **Уведомления** — настройки сохраняются локально, но реальные push/email-уведомления не отправляются (демо-функционал).
+- **Профиль** — имя и email сохраняются в localStorage, нет авторизации и синхронизации.
+- **Часовой пояс** — используется для отображения дат. Дедлайны сравниваются с текущим временем в выбранном часовом поясе.
+- **Импорт JSON** — проверяется структура каждой задачи (обязательные поля, допустимые значения). Некорректные записи пропускаются с подтверждением пользователя.
+
+## Лицензия
+
+MIT

@@ -1,6 +1,7 @@
 import { useReducer, useEffect, type ReactNode } from 'react';
 import { TaskContext, STORAGE_KEY, generateId, initialState, taskReducer } from './TaskContext.types';
 import type { TaskContextValue } from './TaskContext.types';
+import { getStatusLabel, getPriorityLabel, getCategoryLabel } from '@lib/utils';
 
 export function TaskProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(taskReducer, initialState);
@@ -54,7 +55,16 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     if (state.filters.priority !== 'all' && task.priority !== state.filters.priority) return false;
     if (state.filters.search) {
       const search = state.filters.search.toLowerCase();
-      if (!task.title.toLowerCase().includes(search) && !task.description.toLowerCase().includes(search)) {
+      const statusLabel = getStatusLabel(task.status).toLowerCase();
+      const priorityLabel = getPriorityLabel(task.priority).toLowerCase();
+      const categoryLabel = getCategoryLabel(task.category).toLowerCase();
+      if (
+        !task.title.toLowerCase().includes(search) &&
+        !task.description.toLowerCase().includes(search) &&
+        !statusLabel.includes(search) &&
+        !priorityLabel.includes(search) &&
+        !categoryLabel.includes(search)
+      ) {
         return false;
       }
     }

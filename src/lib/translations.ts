@@ -124,6 +124,7 @@ export type TranslationKeys =
   | 'settings.timezone'
   | 'settings.autoDetect'
   | 'settings.moscow'
+  | 'settings.kyiv'
   | 'settings.notifications'
   | 'settings.deadlineNotifications'
   | 'settings.dailyDigest'
@@ -147,6 +148,8 @@ export type TranslationKeys =
   | 'settings.clearConfirmDesc'
   | 'settings.clearAction'
   | 'settings.storageStats'
+  | 'settings.notificationsDemo'
+  | 'settings.profileDemo'
   | 'settings.tasksCount'
   | 'settings.dataSize'
   | 'settings.profile'
@@ -297,6 +300,7 @@ export const translations: Record<Language, Record<TranslationKeys, string>> = {
     'settings.timezone': 'Часовой пояс',
     'settings.autoDetect': 'Автоопределение',
     'settings.moscow': 'Москва (UTC+3)',
+    'settings.kyiv': 'Киев (UTC+2/UTC+3)',
     'settings.notifications': 'Уведомления',
     'settings.deadlineNotifications': 'Уведомления о дедлайнах',
     'settings.dailyDigest': 'Ежедневный дайджест',
@@ -320,6 +324,8 @@ export const translations: Record<Language, Record<TranslationKeys, string>> = {
     'settings.clearConfirmDesc': 'Это действие удалит все ваши задачи без возможности восстановления. Вы уверены?',
     'settings.clearAction': 'Удалить всё',
     'settings.storageStats': 'Статистика хранилища',
+    'settings.notificationsDemo': 'Настройки сохраняются локально. Реальные уведомления не отправляются (демо).',
+    'settings.profileDemo': 'Профиль сохраняется локально в браузере. Синхронизации и авторизации нет (демо).',
     'settings.tasksCount': 'Задач',
     'settings.dataSize': 'Размер данных',
     'settings.profile': 'Профиль',
@@ -469,6 +475,7 @@ export const translations: Record<Language, Record<TranslationKeys, string>> = {
     'settings.timezone': 'Timezone',
     'settings.autoDetect': 'Auto detect',
     'settings.moscow': 'Moscow (UTC+3)',
+    'settings.kyiv': 'Kyiv (UTC+2/UTC+3)',
     'settings.notifications': 'Notifications',
     'settings.deadlineNotifications': 'Deadline notifications',
     'settings.dailyDigest': 'Daily digest',
@@ -492,6 +499,8 @@ export const translations: Record<Language, Record<TranslationKeys, string>> = {
     'settings.clearConfirmDesc': 'This action will delete all your tasks without the possibility of recovery. Are you sure?',
     'settings.clearAction': 'Delete everything',
     'settings.storageStats': 'Storage Statistics',
+    'settings.notificationsDemo': 'Settings are saved locally. Real notifications are not sent (demo).',
+    'settings.profileDemo': 'Profile is saved locally in the browser. No sync or authentication (demo).',
     'settings.tasksCount': 'Tasks',
     'settings.dataSize': 'Data size',
     'settings.profile': 'Profile',

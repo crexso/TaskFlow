@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useState } from 'react';
 import { TaskProvider } from './context/TaskContext';
 import { TranslationProvider } from './context/TranslationContext';
 import { Sidebar } from './components/layout/Sidebar';
@@ -11,11 +12,13 @@ import { Categories } from './pages/Categories';
 import { Settings } from './pages/Settings';
 
 function Layout() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-bg-deep">
-      <Sidebar />
-      <Header />
-      <main className="min-h-screen">
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Header onMenuClick={() => setSidebarOpen(true)} />
+      <main className="min-h-screen lg:pl-64">
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/tasks" element={<Tasks />} />

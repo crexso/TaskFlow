@@ -7,6 +7,7 @@ import { Button } from '@components/ui/Button';
 import { Input } from '@components/ui/Input';
 import { Modal } from '@components/ui/Modal';
 import { Checkbox } from '@components/ui/Checkbox';
+import type { Task } from '@type/task';
 
 // Lazy initializers to avoid setState in useEffect
 const getInitialTheme = (): 'dark' | 'light' | 'system' => {
@@ -17,10 +18,12 @@ const getInitialTheme = (): 'dark' | 'light' | 'system' => {
   return 'dark';
 };
 
-const getInitialTimezone = (): 'auto' | 'UTC' | 'Europe/Moscow' => {
+type Timezone = 'auto' | 'UTC' | 'Europe/Moscow' | 'Europe/Kyiv';
+
+const getInitialTimezone = (): Timezone => {
   if (typeof window !== 'undefined') {
     const saved = localStorage.getItem('taskflow_timezone');
-    if (saved === 'auto' || saved === 'UTC' || saved === 'Europe/Moscow') return saved;
+    if (saved === 'auto' || saved === 'UTC' || saved === 'Europe/Moscow' || saved === 'Europe/Kyiv') return saved;
   }
   return 'auto';
 };
@@ -75,7 +78,7 @@ export function Settings() {
   const [activeTab, setActiveTab] = useState<'general' | 'appearance' | 'data' | 'account'>('general');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light' | 'system'>(getInitialTheme);
-  const [timezone, setTimezone] = useState<'auto' | 'UTC' | 'Europe/Moscow'>(getInitialTimezone);
+  const [timezone, setTimezone] = useState<Timezone>(getInitialTimezone);
   const [notifications, setNotifications] = useState(getInitialNotifications);
   const [animationsEnabled, setAnimationsEnabled] = useState(getInitialAnimations);
   const [profileName, setProfileName] = useState(getInitialProfileName);
@@ -106,7 +109,7 @@ export function Settings() {
   };
 
   const handleTimezoneChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setTimezone(e.target.value as 'auto' | 'UTC' | 'Europe/Moscow');
+    setTimezone(e.target.value as Timezone);
     localStorage.setItem('taskflow_timezone', e.target.value);
   };
 
@@ -144,6 +147,29 @@ export function Settings() {
     URL.revokeObjectURL(url);
   };
 
+  // Validation function for imported tasks
+  const validateTask = (task: unknown): task is Task => {
+    if (!task || typeof task !== 'object') return false;
+    const t = task as Record<string, unknown>;
+
+    const validStatus = ['todo', 'in-progress', 'review', 'done'];
+    const validPriority = ['low', 'medium', 'high'];
+    const validCategory = ['work', 'study', 'personal', 'other'];
+
+    return (
+      typeof t.id === 'string' &&
+      typeof t.title === 'string' && t.title.length > 0 && t.title.length <= 100 &&
+      typeof t.description === 'string' && t.description.length <= 1000 &&
+      validStatus.includes(t.status as string) &&
+      validPriority.includes(t.priority as string) &&
+      validCategory.includes(t.category as string) &&
+      (t.deadline === null || (typeof t.deadline === 'string' && !isNaN(Date.parse(t.deadline)))) &&
+      typeof t.createdAt === 'string' && !isNaN(Date.parse(t.createdAt)) &&
+      typeof t.updatedAt === 'string' && !isNaN(Date.parse(t.updatedAt)) &&
+      (t.completedAt === null || (typeof t.completedAt === 'string' && !isNaN(Date.parse(t.completedAt))))
+    );
+  };
+
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -151,12 +177,29 @@ export function Settings() {
     reader.onload = (event) => {
       try {
         const data = JSON.parse(event.target?.result as string);
-        if (Array.isArray(data)) {
-          localStorage.setItem('taskflow_tasks', JSON.stringify(data));
-          window.location.reload();
+        if (!Array.isArray(data)) {
+          alert('Ошибка при импорте: ожидается массив задач');
+          return;
         }
+
+        const validTasks = data.filter(validateTask);
+        const invalidCount = data.length - validTasks.length;
+
+        if (validTasks.length === 0) {
+          alert('Ошибка при импорте: ни одна задача не прошла проверку структуры');
+          return;
+        }
+
+        if (invalidCount > 0) {
+          if (!confirm(`Найдено ${invalidCount} некорректных задач, которые будут пропущены. Продолжить импорт ${validTasks.length} валидных задач?`)) {
+            return;
+          }
+        }
+
+        localStorage.setItem('taskflow_tasks', JSON.stringify(validTasks));
+        window.location.reload();
       } catch {
-        alert('Ошибка при импорте: неверный формат файла');
+        alert('Ошибка при импорте: неверный формат JSON файла');
       }
     };
     reader.readAsText(file);
@@ -222,12 +265,14 @@ export function Settings() {
                     <option value="auto">{t('settings.autoDetect')}</option>
                     <option value="UTC">UTC</option>
                     <option value="Europe/Moscow">{t('settings.moscow')}</option>
+                    <option value="Europe/Kyiv">{t('settings.kyiv')}</option>
                   </select>
                 </div>
               </section>
 
               <section className="pt-6 border-t border-border-subtle">
                 <h3 className="text-sm font-medium text-text-secondary mb-4 uppercase tracking-wide">{t('settings.notifications')}</h3>
+                <p className="text-xs text-text-muted mb-4">{t('settings.notificationsDemo')}</p>
                 <div className="space-y-3">
                   <Checkbox
                     checked={notifications.deadlines}
@@ -349,6 +394,7 @@ export function Settings() {
             <div className={cn('space-y-6 animate-in', !animationsEnabled && 'animate-none')}>
               <section>
                 <h3 className="text-sm font-medium text-text-secondary mb-4 uppercase tracking-wide">{t('settings.profile')}</h3>
+                <p className="text-xs text-text-muted mb-4">{t('settings.profileDemo')}</p>
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center">
                     <User className="h-8 w-8 text-white" />

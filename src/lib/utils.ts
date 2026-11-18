@@ -1,16 +1,36 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { format, formatDistanceToNow, isPast, parseISO } from 'date-fns';
+import { formatDistanceToNow, isPast, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { toZonedTime, format as formatTz } from 'date-fns-tz';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+function getTimezone(): string {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('taskflow_timezone');
+    if (saved && saved !== 'auto') return saved;
+    // auto: use browser's timezone
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  }
+  return 'UTC';
+}
+
+function getTimezoneForDate(_dateString: string): string {
+  // For parsing ISO strings, we need to handle timezone properly
+  // The stored dates are in ISO format (UTC), so we convert to the user's timezone for display
+  return getTimezone();
+}
+
 export function formatDate(dateString: string | null): string {
   if (!dateString) return '—';
   try {
-    return format(parseISO(dateString), 'd MMM yyyy', { locale: ru });
+    const tz = getTimezoneForDate(dateString);
+    const date = parseISO(dateString);
+    const zonedDate = toZonedTime(date, tz);
+    return formatTz(zonedDate, 'd MMM yyyy', { timeZone: tz, locale: ru });
   } catch {
     return '—';
   }
@@ -18,7 +38,10 @@ export function formatDate(dateString: string | null): string {
 
 export function formatDateTime(dateString: string): string {
   try {
-    return format(parseISO(dateString), 'd MMM yyyy, HH:mm', { locale: ru });
+    const tz = getTimezoneForDate(dateString);
+    const date = parseISO(dateString);
+    const zonedDate = toZonedTime(date, tz);
+    return formatTz(zonedDate, 'd MMM yyyy, HH:mm', { timeZone: tz, locale: ru });
   } catch {
     return dateString;
   }
@@ -26,7 +49,10 @@ export function formatDateTime(dateString: string): string {
 
 export function getRelativeTime(dateString: string): string {
   try {
-    return formatDistanceToNow(parseISO(dateString), { addSuffix: true, locale: ru });
+    const tz = getTimezoneForDate(dateString);
+    const date = parseISO(dateString);
+    const zonedDate = toZonedTime(date, tz);
+    return formatDistanceToNow(zonedDate, { addSuffix: true, locale: ru });
   } catch {
     return '';
   }

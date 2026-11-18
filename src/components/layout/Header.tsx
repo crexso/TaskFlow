@@ -1,4 +1,4 @@
-import { Search, Filter, Bell, User, ChevronDown, Moon, Sun, LogOut, Settings, User as UserIcon } from 'lucide-react';
+import { Search, Filter, Bell, User, ChevronDown, Moon, Sun, LogOut, Settings, User as UserIcon, Menu } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useTasks } from '@hooks/useTasks';
 import { Button } from '@components/ui/Button';
@@ -13,7 +13,11 @@ const getInitialTheme = (): 'dark' | 'light' => {
   return 'dark';
 };
 
-export function Header() {
+interface HeaderProps {
+  onMenuClick: () => void;
+}
+
+export function Header({ onMenuClick }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showProfile, setShowProfile] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>(getInitialTheme);
@@ -42,7 +46,17 @@ export function Header() {
   };
 
   return (
-    <header className="fixed left-64 right-0 top-0 z-30 h-16 bg-bg-base/80 backdrop-blur-lg border-b border-border-subtle flex items-center px-6">
+    <header className="fixed left-64 right-0 top-0 z-30 h-16 bg-bg-base/80 backdrop-blur-lg border-b border-border-subtle flex items-center px-6 lg:pl-0">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="lg:hidden mr-4"
+        onClick={onMenuClick}
+        aria-label="Открыть меню"
+      >
+        <Menu className="h-6 w-6" />
+      </Button>
+
       <div className="flex-1 flex items-center gap-4 max-w-2xl">
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" aria-hidden="true" />
